@@ -6,7 +6,7 @@ import { Box, Button, Field, Flex, Heading, Image, Input, Stack, Text } from "@c
 import { useForm } from "react-hook-form"
 export function Login() {
   const { register, handleSubmit, formState: { isSubmitting } } = useForm<LoginForm>()
-  const { signIn, loading } = useSignIn()
+  const { signIn } = useSignIn()
 
   async function handleLogin(data: LoginForm) {
     await signIn(data.email, data.password)

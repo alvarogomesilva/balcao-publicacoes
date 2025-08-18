@@ -1,6 +1,6 @@
 import { auth } from "@/lib/config";
 import { useAuthStore } from "@/store/auth-store";
-import { Box, Flex, HStack, Spacer, Text, IconButton, Heading } from "@chakra-ui/react";
+import { Box, Flex, HStack, Spacer, Heading } from "@chakra-ui/react";
 import { signOut } from "firebase/auth";
 import { LuLogOut } from "react-icons/lu";
 import { Link, useNavigate } from "react-router";
@@ -11,9 +11,9 @@ export function Navbar() {
 
     const handleLogout = async () => {
         try {
-            await signOut(auth);   // Firebase desloga
-            logout();              // limpa seu Zustand
-            navigate("/login");    // redireciona
+            await signOut(auth);   
+            logout();              
+            navigate("/login");    
         } catch (err) {
             console.error("Erro ao deslogar:", err);
         }

@@ -8,7 +8,7 @@ export const useRegister = () => {
     const registerPublication = async (inputs: RegisterPublication) => {
         const { name, code } = inputs
         try {
-            const docRef = await addDoc(collection(database, "publications"), {
+            await addDoc(collection(database, "publications"), {
                 name,
                 code,
                 createdAt: serverTimestamp(),

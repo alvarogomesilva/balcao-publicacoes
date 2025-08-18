@@ -1,18 +1,10 @@
-// src/components/Navbar.tsx
 import { Navbar } from "@/components/shared/nav-bar";
 import {
     Box,
-    Flex,
-    HStack,
-    Link as ChakraLink,
-    Avatar,
-    Text,
-    Spacer,
     SimpleGrid,
     Stack,
     Heading,
     Image,
-    LinkBox,
 } from "@chakra-ui/react";
 import { Link } from "react-router";
 export function Dashboard() {

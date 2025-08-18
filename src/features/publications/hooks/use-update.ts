@@ -3,7 +3,7 @@ import { doc, updateDoc } from "firebase/firestore";
 
 export const useUpdatePublication = () => {
 
-    const updatePublication = async (values) => {
+    const updatePublication = async () => {
         try {
             const publication = doc(database, "publications", );
 
