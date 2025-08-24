@@ -1,40 +1,40 @@
 import { database } from "@/lib/config";
 import { collection, query, getDocs, limit } from "firebase/firestore";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 interface Publication {
   id: string
+  active: boolean
   name: string
   code: string
+  category: string
+  stock: string
   createdAt: Date
 }
 
 export const useGetAllPublications = () => {
   const [publications, setPublications] = useState<Publication[]>([])
   const [isLoading, setIsLoading] = useState(false)
-  useEffect(() => {
-    const getAllPublications = async () => {
-      setIsLoading(true)
-      try {
-        const q = query(collection(database, "publications"), limit(3))
-        const querySnapshot = await getDocs(q)
+  
+  const getAllPublications = async () => {
+    setIsLoading(true)
+    try {
+      const q = query(collection(database, "publications"), limit(5))
+      const querySnapshot = await getDocs(q)
 
-        const results: any[] = []
-        querySnapshot.forEach((doc) => {
-          results.push({ id: doc.id, ...doc.data() })
-        })
+      const results: any[] = []
+      querySnapshot.forEach((doc) => {
+        results.push({ id: doc.id, ...doc.data() })
+      })
 
-        setPublications(results)
-      } catch (error) {
-        console.log(error)
-      } 
-      finally {
-        setIsLoading(false)
-      }
+      setPublications(results)
+    } catch (error) {
+      console.log(error)
     }
+    finally {
+      setIsLoading(false)
+    }
+  }
 
-    getAllPublications()
-  }, [])
-
-  return { publications, isLoading }
+  return { publications, isLoading, getAllPublications }
 }

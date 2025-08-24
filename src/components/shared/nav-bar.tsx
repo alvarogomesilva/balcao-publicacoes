@@ -6,6 +6,7 @@ import { LuLogOut } from "react-icons/lu";
 import { Link, useNavigate } from "react-router";
 
 export function Navbar() {
+    const { user } = useAuthStore()
     const { logout } = useAuthStore();
     const navigate = useNavigate();
 
@@ -24,18 +25,16 @@ export function Navbar() {
             <Flex align="center">
                 {/* Logo / Nome */}
                 <Link to={"/"} >
-                    <Heading fontSize="xl" fontWeight="bold" color="teal.500" >Balcão de Publicações</Heading>
+                    <Heading fontSize="xl" fontWeight="bold" color="teal.600" >Balcão | {user?.name}</Heading>
                 </Link>
 
                 <Spacer />
 
                 {/* Botão de logout */}
-                <HStack spaceX={4} cursor={"pointer"}>
+                <HStack spaceX={4} cursor={"pointer"} color={"black"} fontSize={20}>
                     <LuLogOut
                         aria-label="Sair"
                         onClick={handleLogout}
-                        color="red.500"
-
                     />
                 </HStack>
             </Flex>

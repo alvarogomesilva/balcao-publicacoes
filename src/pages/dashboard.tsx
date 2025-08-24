@@ -7,12 +7,14 @@ import {
     Image,
 } from "@chakra-ui/react";
 import { Link } from "react-router";
+import publicationsImg from "@/assets/publications.png";
+import ordersImg from "@/assets/orders.png";
 export function Dashboard() {
     return (
         <>
             <Navbar />
             
-            <SimpleGrid columns={{ base: 1, md: 3 }} gap={6} p={6}>
+            <SimpleGrid columns={{ base: 1, md: 3 }} gap={3} p={6} flexDirection={"column"}>
                 {/* Card Publicações */}
                 <Link
                     to={"/publications"}
@@ -27,9 +29,9 @@ export function Dashboard() {
                         _hover={{ transform: "scale(1.02)", transition: "0.2s" }}
                         cursor={"pointer"}>
                         <Image
-                            src="https://plus.unsplash.com/premium_photo-1669652639337-c513cc42ead6?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                            src={publicationsImg}
                             alt="Publicações"
-                            objectFit="cover"
+                            objectFit="contain"
                             w="full"
                             h="150px"
                         />
@@ -54,9 +56,9 @@ export function Dashboard() {
                         _hover={{ transform: "scale(1.02)", transition: "0.2s" }}
                         cursor={"pointer"}>
                         <Image
-                            src="https://plus.unsplash.com/premium_photo-1669652639337-c513cc42ead6?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                            src={ordersImg}
                             alt="Publicações"
-                            objectFit="cover"
+                            objectFit="contain"
                             w="full"
                             h="150px"
                         />
@@ -72,26 +74,7 @@ export function Dashboard() {
                     to={"/movements"}
 
                 >
-                    <Box
-
-                        bg="white"
-                        shadow="md"
-                        rounded="lg"
-                        overflow="hidden"
-                        _hover={{ transform: "scale(1.02)", transition: "0.2s" }}
-                        cursor={"pointer"}>
-                        <Image
-                            src="https://plus.unsplash.com/premium_photo-1669652639337-c513cc42ead6?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                            alt="Publicações"
-                            objectFit="cover"
-                            w="full"
-                            h="150px"
-                        />
-                        <Stack p={4}>
-                            <Heading fontSize="lg">Movimentações</Heading>
-                        </Stack>
-                    </Box>
-
+                 
                 </Link>
             </SimpleGrid>
         </>

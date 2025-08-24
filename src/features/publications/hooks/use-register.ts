@@ -6,11 +6,14 @@ import { toast } from "sonner";
 export const useRegister = () => {
 
     const registerPublication = async (inputs: RegisterPublication) => {
-        const { name, code } = inputs
+        const { name, code, category, active } = inputs
         try {
             await addDoc(collection(database, "publications"), {
+                active,
                 name,
-                code,
+                code: code || 0,
+                category,
+                stock: 0,
                 createdAt: serverTimestamp(),
                 updatedAt: serverTimestamp()
             });

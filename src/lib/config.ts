@@ -4,12 +4,12 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBzPNXOLfZa4smZoSGXajmnVrfHUKVjE-o",
-  authDomain: "balcao-publicacoes.firebaseapp.com",
-  projectId: "balcao-publicacoes",
-  storageBucket: "balcao-publicacoes.firebasestorage.app",
-  messagingSenderId: "871403043152",
-  appId: "1:871403043152:web:b5c0bd6e1e089c50559455"
+  apiKey:  import.meta.env.VITE_API_KEY,
+  authDomain: import.meta.env.VITE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_APP_ID
 };
 
 

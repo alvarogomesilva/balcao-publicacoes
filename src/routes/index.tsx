@@ -6,7 +6,6 @@ import { PublicRoutes } from "./public-route";
 import { ProtectedRoutes } from "./protected-route";
 import { Publication } from "@/pages/publication";
 import { Order } from "@/pages/orders";
-import { Movements } from "@/pages/movements";
 
 
 export const router = createBrowserRouter(
@@ -20,7 +19,6 @@ export const router = createBrowserRouter(
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/publications" element={<Publication />} />
                 <Route path="/orders" element={<Order />} />
-                <Route path="/movements" element={<Movements />} />
             </Route>
 
             <Route path="*" element={<NotFound />} />

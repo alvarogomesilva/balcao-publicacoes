@@ -1,59 +1,66 @@
 import { PasswordInput } from "@/components/ui/password-input";
 import { useSignIn } from "@/features/auth/hooks/use-auth";
-import type { LoginForm } from "@/validations/login-validation";
+import { loginValidation, type LoginForm } from "@/validations/login-validation";
 import { Box, Button, Field, Flex, Heading, Image, Input, Stack, Text } from "@chakra-ui/react";
 
 import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import logoImg from '@/assets/logo.png'
+
 export function Login() {
-  const { register, handleSubmit, formState: { isSubmitting } } = useForm<LoginForm>()
+  const { register, handleSubmit, formState: { isSubmitting, errors } } = useForm<LoginForm>({
+    resolver: zodResolver(loginValidation)
+    
+  })
+
   const { signIn } = useSignIn()
 
   async function handleLogin(data: LoginForm) {
-    await signIn(data.email, data.password)
+      await signIn(data.email, data.password)
   }
 
   return (
     <Flex minH="100vh" align="center" justify="center" bg="gray.50" px={4}>
       <Stack
-
         w={{ base: "full", md: "md" }}
         bg="white"
         rounded="xl"
         boxShadow="lg"
         p={{ base: 6, sm: 10 }}
       >
-        {/* Logo */}
+
         <Flex justify="center">
           <Image
             boxSize="50px"
-            src="https://dummyimage.com/50x50/00b894/fff.png&text=V"
+            src={logoImg}
             alt="Logo"
           />
         </Flex>
 
-        {/* Título */}
+      
         <Stack textAlign="center">
           <Heading fontSize="2xl">Bem-vindo | Balcão</Heading>
           <Text color="gray.600">Faça seu login</Text>
         </Stack>
 
-        {/* Formulário */}
+      
         <Box as="form" onSubmit={handleSubmit(handleLogin)}>
-          <Stack >
-            <Field.Root>
-              <Field.Label>Usuário</Field.Label>
+          <Stack>
+            <Field.Root invalid={!!errors.email}>
+              <Field.Label>Email</Field.Label>
               <Input
-                {...register('email')}
+                {...register("email")}
+                type="text"
               />
-              {/* <Field.ErrorText>This field is required</Field.ErrorText> */}
+              <Field.ErrorText>{errors.email?.message}</Field.ErrorText>
             </Field.Root>
 
-            <Field.Root marginTop={4}>
+            <Field.Root invalid={!!errors.password} marginTop={4}>
               <Field.Label>Senha</Field.Label>
               <PasswordInput
-                {...register('password')}
+                {...register("password")}
               />
-              {/* <Field.ErrorText>This field is required</Field.ErrorText> */}
+                <Field.ErrorText>{errors.password?.message}</Field.ErrorText>
             </Field.Root>
 
             <Button

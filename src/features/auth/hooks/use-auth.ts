@@ -17,17 +17,15 @@ export const useSignIn = () => {
             if (user) {
                 const docRef = doc(database, "users", user?.user.uid);
                 const docSnap = await getDoc(docRef);
-                console.log(docSnap.data())
                 localStorage.setItem("@u", JSON.stringify(docSnap.data()));
                 loginUser(docSnap.data() as User)
                 navigate('/')
-                toast.success("Sucesso", {
-                    description: "Seja Bem-vindo!"
-                })
+            } else {
+                toast.error('Email/senha incorretos!')
             }
 
         } catch (error) {
-            console.log(error)
+            console.clear()
         }
     }
 
