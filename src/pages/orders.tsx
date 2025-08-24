@@ -5,7 +5,7 @@ import { FiSearch } from "react-icons/fi"
 import { LuSearch } from "react-icons/lu"
 
 export function Order() {
-    const [isOpen, setIsOpen] = useState(false)
+    const [_, setIsOpen] = useState(false)
     return (
         <>
             <Navbar />
