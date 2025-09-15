@@ -1,19 +1,17 @@
-// ... imports iguais
-
 import { Navbar } from "@/components/shared/nav-bar"
-import { ModalAddStock } from "@/features/publications/components/modal-add-stock"
-import { ModalDeletePulication } from "@/features/publications/components/modal-delete"
-import { ModalOutStock } from "@/features/publications/components/modal-out-stock"
-import { ModalRegisterPublication } from "@/features/publications/components/modal-register"
-import { ModalUpdatePublication } from "@/features/publications/components/modal-update"
-import { useGetAllPublications } from "@/features/publications/hooks/use-get-all"
-import { useSearch } from "@/features/publications/hooks/use-search"
 import { Box, Button, Flex, Heading, Input, InputGroup, Menu, Portal, Table } from "@chakra-ui/react"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { LuSearch } from "react-icons/lu"
 import { FiSearch } from "react-icons/fi";
+import { ModalRegisterBook } from "@/features/books/components/modal-register-book"
+import { ModalUpdateBook } from "@/features/books/components/modal-update-book"
+import { ModalDeleteBook } from "@/features/books/components/modal-delete-book"
+import { ModalAddStockBook } from "@/features/books/components/modal-add-stock-book"
+import { ModalOutStockBook } from "@/features/books/components/modal-out-stock-book"
+import { useGetAllBooks } from "@/features/books/hooks/use-get-all-book"
+import { useSearchBook } from "@/features/books/hooks/use-search-book"
 
-export function Publication() {
+export function Books() {
   const [isOpen, setIsOpen] = useState(false)
   const [isUpdate, setIsUpdate] = useState(false)
   const [isDelete, setIsDelete] = useState(false)
@@ -26,39 +24,35 @@ export function Publication() {
   })
 
   const [publicationDeleteId, setPublicationDeleteId] = useState("")
-  const { publications, isLoading, getAllPublications } = useGetAllPublications()
+  const { books, isLoading } = useGetAllBooks()
 
   const [valuesUpdates, setValuesUpdate] = useState({
     id: "",
     name: ""
   })
 
-  const { search } = useSearch()
+  const { searchBook } = useSearchBook()
   const [searchQuery, setSearchQuery] = useState("")
-  const [searchResults, setSearchResults] = useState<any[]>([]) // resultados da busca
-  const [isSearching, setIsSearching] = useState(false) // flag para indicar se está buscando
+  const [searchResults, setSearchResults] = useState<any[]>([])
+  const [isSearching, setIsSearching] = useState(false)
 
   async function handleSearchByName() {
     if (!searchQuery.trim()) {
-      // se campo vazio, volta para lista padrão
+
       setIsSearching(false)
       return
     }
 
-    const q = await search(searchQuery)
+    const q = await searchBook(searchQuery)
 
     if (q) {
       setSearchResults(q)
-      setIsSearching(true) // mostra resultados
+      setIsSearching(true)
     }
   }
 
-  useEffect(() => {
-    getAllPublications()
-  }, [])
-
   // decide qual lista renderizar
-  const dataToRender = isSearching ? searchResults : publications
+  const dataToRender = isSearching ? searchResults : books
 
   return (
     <>
@@ -66,7 +60,7 @@ export function Publication() {
 
       <Box margin={6}>
         <Flex justifyContent={"space-between"} my={4}>
-          <Heading mb={3}>Publicações</Heading>
+          <Heading mb={3}>Livros</Heading>
 
           <Button bg={"teal.700"} onClick={() => setIsOpen(true)}>
             Adicionar
@@ -173,38 +167,38 @@ export function Publication() {
       </Box>
 
       {/* Modais */}
-      <ModalRegisterPublication
+      <ModalRegisterBook
         isOpen={isOpen}
         setIsOpen={setIsOpen}
-        refecth={getAllPublications}
+
       />
 
-      <ModalUpdatePublication
+      <ModalUpdateBook
         isUpdate={isUpdate}
         setIsUpdate={setIsUpdate}
         values={valuesUpdates}
-        refecth={getAllPublications}
+
       />
 
-      <ModalDeletePulication
+      <ModalDeleteBook
         isDelete={isDelete}
         setIsDelete={setIsDelete}
         publicationDeleteId={publicationDeleteId}
-        refecth={getAllPublications}
+
       />
 
-      <ModalAddStock
+      <ModalAddStockBook
         setIsOpen={setAddIsOpen}
         open={addIsOpen}
         actualStock={actualStock}
-        refecth={getAllPublications}
+
       />
 
-      <ModalOutStock
+      <ModalOutStockBook
         setIsOpen={setOutIsOpen}
         open={outIsOpen}
         actualStock={actualStock}
-        refecth={getAllPublications}
+
       />
     </>
   )

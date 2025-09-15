@@ -12,9 +12,9 @@ export function Navbar() {
 
     const handleLogout = async () => {
         try {
-            await signOut(auth);   
-            logout();              
-            navigate("/login");    
+            await signOut(auth);
+            logout();
+            navigate("/login");
         } catch (err) {
             console.error("Erro ao deslogar:", err);
         }
@@ -23,15 +23,32 @@ export function Navbar() {
     return (
         <Box bg="white" px={6} py={3} shadow="sm" position="sticky" top={0} zIndex={10}>
             <Flex align="center">
-                {/* Logo / Nome */}
+
+                <Link to={"/dashboard"}  >
+                    <Heading
+                        fontSize="md"
+                        fontWeight="bold"
+                        color="teal.600"
+                        mr={2}
+                        _hover={{ color: "teal.700" }}
+                    >Dashboard</Heading>
+                </Link>
+
                 <Link to={"/"} >
-                    <Heading fontSize="xl" fontWeight="bold" color="teal.600" >Balcão | {user?.name}</Heading>
+                    <Heading
+                        fontSize="md"
+                        fontWeight="bold"
+                        color="teal.600"
+                        _hover={{ color: "teal.700" }}
+                    >Publicações</Heading>
                 </Link>
 
                 <Spacer />
 
-                {/* Botão de logout */}
-                <HStack spaceX={4} cursor={"pointer"} color={"black"} fontSize={20}>
+
+                <HStack cursor={"pointer"} color={"black"} fontSize={20}>
+                    <Heading fontSize="sm" fontWeight="bold" color="teal.600" >{user?.name}</Heading>
+
                     <LuLogOut
                         aria-label="Sair"
                         onClick={handleLogout}

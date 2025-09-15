@@ -17,12 +17,12 @@ export const useAuthStore = create<AuthStoreState>((set) => ({
   user: JSON.parse(localStorage.getItem("@u") || "null"),
 
   login: (user: User) => {
-    localStorage.setItem("@u", JSON.stringify(user)); // salva no storage
+    localStorage.setItem("@u", JSON.stringify(user))
     set({ user });
   },
 
   logout: () => {
-    localStorage.removeItem("@u"); // limpa storage
+    localStorage.removeItem("@u")
     set({ user: null });
   },
 }));
