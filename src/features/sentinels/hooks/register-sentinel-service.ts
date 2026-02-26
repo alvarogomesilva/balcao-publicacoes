@@ -4,23 +4,23 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { toast } from "sonner";
 
-export const useRegisterBook = () => {
+export const registerSentinelService = () => {
     const queryClient = useQueryClient()
 
-    const registerBook = async (inputs: RegisterPublication) => {
+    const registerSentinel = async (inputs: RegisterPublication) => {
         const { name, code, active } = inputs
         try {
-            await addDoc(collection(database, "books"), {
+            await addDoc(collection(database, "sentinels"), {
                 active,
                 name,
                 code: code || 0,
-                category: 'livro',
+                category: 'sentinela',
                 stock: 0,
                 createdAt: serverTimestamp(),
                 updatedAt: serverTimestamp()
             });
             toast.success("Sucesso", {
-                description: "Criado com sucesso!"
+                description: "Registrado com sucesso"
             })
         } catch (error) {
             console.log(error)
@@ -28,13 +28,13 @@ export const useRegisterBook = () => {
     }
 
     const mutation = useMutation({
-        mutationFn: registerBook,
+        mutationFn: registerSentinel,
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["books"] });
+            queryClient.invalidateQueries({ queryKey: ["sentinels"] });
         },
     })
 
     return {
-        registerBook: mutation.mutate
+        registerSentinel: mutation.mutate
     }
 }

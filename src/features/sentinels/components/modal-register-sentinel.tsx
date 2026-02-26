@@ -2,7 +2,7 @@ import { registerPublicationValidation, type RegisterPublication } from "@/valid
 import { Button, Checkbox, CloseButton, Dialog, Field, Input, Portal } from "@chakra-ui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
-import { useRegisterBook } from "../hooks/use-register-book";
+import { registerSentinelService } from "../hooks/register-sentinel-service";
 
 interface ModalProps {
     isOpen: boolean;
@@ -10,8 +10,8 @@ interface ModalProps {
     
 }
 
-export function ModalRegisterBook({ isOpen, setIsOpen }: ModalProps) {
-    const { registerBook } = useRegisterBook();
+export function ModalRegisterSentinel({ isOpen, setIsOpen }: ModalProps) {
+    const { registerSentinel } = registerSentinelService();
     const {
         register,
         handleSubmit,
@@ -27,7 +27,7 @@ export function ModalRegisterBook({ isOpen, setIsOpen }: ModalProps) {
 
     async function handleRegisterBook(data: RegisterPublication) {
        
-        await registerBook(data);
+        await registerSentinel(data);
         reset({
             name: "",
             code: ""
@@ -43,7 +43,7 @@ export function ModalRegisterBook({ isOpen, setIsOpen }: ModalProps) {
                 <Dialog.Positioner>
                     <Dialog.Content>
                         <Dialog.Header>
-                            <Dialog.Title>Cadastro de Livro</Dialog.Title>
+                            <Dialog.Title>Cadastro de Sentinela</Dialog.Title>
                         </Dialog.Header>
                         <Dialog.Body pb="8" as="form" onSubmit={handleSubmit(handleRegisterBook)}>
 
