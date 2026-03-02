@@ -1,7 +1,7 @@
 import { Navbar } from "@/components/shared/nav-bar";
 import { ModalRegisterSentinel } from "@/features/sentinels/components/modal-register-sentinel";
 import { useGetAllSentinels } from "@/features/sentinels/hooks/get-all-sentinel-service";
-import { Box, Button, Flex, Heading, Input, InputGroup, Menu, Portal, Table } from "@chakra-ui/react";
+import { Box, Button, Flex, Heading, Input, InputGroup, Menu, Portal, Spinner, Table, Text, VStack } from "@chakra-ui/react";
 import { useState } from "react";
 import { FiSearch } from "react-icons/fi";
 import { LuSearch } from "react-icons/lu";
@@ -57,34 +57,41 @@ export function Sentinels() {
           </Button>
         </Flex>
 
-         {/* Tabela responsiva */}
-                {!isLoading && (
-                  <Box overflowX="auto">
-                    <Table.Root size="sm" showColumnBorder>
-                      <Table.Header>
-                        <Table.Row>
-                          <Table.ColumnHeader>Nome</Table.ColumnHeader>
-                          <Table.ColumnHeader>Estoque</Table.ColumnHeader>
-                          <Table.ColumnHeader textAlign="center">Ações</Table.ColumnHeader>
-                        </Table.Row>
-                      </Table.Header>
-                      <Table.Body>
-                        {dataToRender.map((item: any) => (
-                          <Table.Row key={item.name}>
-                            <Table.Cell>{item.name}</Table.Cell>
-                            <Table.Cell>{item.stock}</Table.Cell>
-                            <Table.Cell textAlign="center">
-                              <Menu.Root>
-                                <Menu.Trigger asChild>
-                                  <Button variant="outline" size="sm">
-                                    Opções
-                                  </Button>
-                                </Menu.Trigger>
-                                <Portal>
-                                  <Menu.Positioner>
-                                    <Menu.Content>
-        
-                                      {/* <Menu.Item
+        {isLoading && (
+          <VStack colorPalette="teal">
+            <Spinner color="colorPalette.600" />
+            <Text color="colorPalette.600">Carregando...</Text>
+          </VStack>
+        )}
+
+        {/* Tabela responsiva */}
+        {!isLoading && (
+          <Box overflowX="auto">
+            <Table.Root size="sm" showColumnBorder>
+              <Table.Header>
+                <Table.Row>
+                  <Table.ColumnHeader>Nome</Table.ColumnHeader>
+                  <Table.ColumnHeader>Estoque</Table.ColumnHeader>
+                  <Table.ColumnHeader textAlign="center">Ações</Table.ColumnHeader>
+                </Table.Row>
+              </Table.Header>
+              <Table.Body>
+                {dataToRender.map((item: any) => (
+                  <Table.Row key={item.name}>
+                    <Table.Cell>{item.name}</Table.Cell>
+                    <Table.Cell>{item.stock}</Table.Cell>
+                    <Table.Cell textAlign="center">
+                      <Menu.Root>
+                        <Menu.Trigger asChild>
+                          <Button variant="outline" size="sm">
+                            Opções
+                          </Button>
+                        </Menu.Trigger>
+                        <Portal>
+                          <Menu.Positioner>
+                            <Menu.Content>
+
+                              {/* <Menu.Item
                                         onClick={() => {
                                           setAddIsOpen(true)
                                           setActualStock({
@@ -95,7 +102,7 @@ export function Sentinels() {
                                         value="enter">
                                         Entrada Estoque
                                       </Menu.Item> */}
-{/*         
+                              {/*         
                                       <Menu.Item
                                         value="out"
                                         onClick={() => {
@@ -108,15 +115,15 @@ export function Sentinels() {
                                       >
                                         Saida Estoque
                                       </Menu.Item> */}
-        
-                                      {/* <Menu.Item
+
+                              {/* <Menu.Item
                                         value="edit"
                                         onClick={() => {
                                           setIsUpdate(true)
                                           setValuesUpdate({ id: item.id, name: item.name })
                                         }}>Editar</Menu.Item>
          */}
-                                      {/* <Menu.Item
+                              {/* <Menu.Item
                                         onClick={() => {
                                           setIsDelete(true)
                                           setPublicationDeleteId(item.id)
@@ -125,17 +132,17 @@ export function Sentinels() {
                                         Excluir
                                       </Menu.Item> */}
 
-                                    </Menu.Content>
-                                  </Menu.Positioner>
-                                </Portal>
-                              </Menu.Root>
-                            </Table.Cell>
-                          </Table.Row>
-                        ))}
-                      </Table.Body>
-                    </Table.Root>
-                  </Box>
-                )}
+                            </Menu.Content>
+                          </Menu.Positioner>
+                        </Portal>
+                      </Menu.Root>
+                    </Table.Cell>
+                  </Table.Row>
+                ))}
+              </Table.Body>
+            </Table.Root>
+          </Box>
+        )}
 
       </Box>
     </>

@@ -1,5 +1,5 @@
 import { Navbar } from "@/components/shared/nav-bar"
-import { Box, Button, Flex, Heading, Input, InputGroup, Menu, Portal, Table } from "@chakra-ui/react"
+import { Box, Button, Flex, Heading, Input, InputGroup, Menu, Portal, Spinner, Table, Text, VStack } from "@chakra-ui/react"
 import { useState } from "react"
 import { LuSearch } from "react-icons/lu"
 import { FiSearch } from "react-icons/fi";
@@ -85,6 +85,13 @@ export function Books() {
             <FiSearch />
           </Button>
         </Flex>
+
+        {isLoading && (
+          <VStack colorPalette="teal">
+            <Spinner color="colorPalette.600" />
+            <Text color="colorPalette.600">Carregando...</Text>
+          </VStack>
+        )}
 
         {/* Tabela responsiva */}
         {!isLoading && (
