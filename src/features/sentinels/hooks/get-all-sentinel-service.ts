@@ -26,7 +26,7 @@ const getAllSentinelService = async (): Promise<Sentinel[]> => {
 
 export const useGetAllSentinels = () => {
   const { data: sentinels = [], isLoading, isError } = useQuery<Sentinel[]>({
-    queryKey: ['books'],
+    queryKey: ['sentinels'],
     queryFn: getAllSentinelService,
   })
 

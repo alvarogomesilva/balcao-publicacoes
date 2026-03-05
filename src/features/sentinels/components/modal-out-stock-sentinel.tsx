@@ -3,7 +3,7 @@ import { Button, CloseButton, Dialog, Field, Input, Portal } from "@chakra-ui/re
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useRef } from "react";
-import { useRemoveStock } from "../hooks/use-remove-stock";
+import { useRemoveStock } from "../hooks/remove-stock-service";
 
 interface StockUpdate {
     id: string
@@ -17,7 +17,7 @@ interface ModalProps {
 
 }
 
-export function ModalOutStockBook({ open, setIsOpen, actualStock }: ModalProps) {
+export function ModalOutStockSentinel({ open, setIsOpen, actualStock }: ModalProps) {
     const closeButton = useRef<HTMLButtonElement>(null)
     const { removeStock } = useRemoveStock()
     const {

@@ -1,5 +1,6 @@
 import { Navbar } from "@/components/shared/nav-bar";
 import { ModalAddStockSentinel } from "@/features/sentinels/components/modal-add-stock-sentinel";
+import { ModalOutStockSentinel } from "@/features/sentinels/components/modal-out-stock-sentinel";
 import { ModalRegisterSentinel } from "@/features/sentinels/components/modal-register-sentinel";
 import { useGetAllSentinels } from "@/features/sentinels/hooks/get-all-sentinel-service";
 import { Box, Button, Flex, Heading, Input, InputGroup, Menu, Portal, Spinner, Table, Text, VStack } from "@chakra-ui/react";
@@ -12,10 +13,13 @@ export function Sentinels() {
   const { sentinels, isLoading } = useGetAllSentinels()
 
   const [addIsOpen, setAddIsOpen] = useState(false)
+  const [outIsOpen, setOutIsOpen] = useState(false)
   const [actualStock, setActualStock] = useState({
     stock: 0,
     id: ''
   })
+
+
 
   const isSearching = false
   const searchResults: any[] = []
@@ -99,29 +103,29 @@ export function Sentinels() {
                             <Menu.Content>
 
                               <Menu.Item
-                                        onClick={() => {
-                                          setAddIsOpen(true)
-                                          setActualStock({
-                                            stock: parseInt(item.stock),
-                                            id: item.id
-                                          })
-                                        }}
-                                        value="enter">
-                                        Entrada Estoque
-                                      </Menu.Item>
-                              {/*         
-                                      <Menu.Item
-                                        value="out"
-                                        onClick={() => {
-                                          setOutIsOpen(true)
-                                          setActualStock({
-                                            stock: parseInt(item.stock),
-                                            id: item.id
-                                          })
-                                        }}
-                                      >
-                                        Saida Estoque
-                                      </Menu.Item> */}
+                                onClick={() => {
+                                  setAddIsOpen(true)
+                                  setActualStock({
+                                    stock: parseInt(item.stock),
+                                    id: item.id
+                                  })
+                                }}
+                                value="enter">
+                                Entrada Estoque
+                              </Menu.Item>
+
+                              <Menu.Item
+                                value="out"
+                                onClick={() => {
+                                  setOutIsOpen(true)
+                                  setActualStock({
+                                    stock: parseInt(item.stock),
+                                    id: item.id
+                                  })
+                                }}
+                              >
+                                Saida Estoque
+                              </Menu.Item>
 
                               {/* <Menu.Item
                                         value="edit"
@@ -151,10 +155,17 @@ export function Sentinels() {
           </Box>
         )}
 
-        <ModalAddStockSentinel 
-            actualStock={actualStock}
-            open={addIsOpen}
-            setIsOpen={setAddIsOpen}
+        <ModalAddStockSentinel
+          actualStock={actualStock}
+          open={addIsOpen}
+          setIsOpen={setAddIsOpen}
+        />
+
+        <ModalOutStockSentinel
+          setIsOpen={setOutIsOpen}
+          open={outIsOpen}
+          actualStock={actualStock}
+
         />
 
       </Box>

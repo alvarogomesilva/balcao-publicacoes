@@ -8,7 +8,7 @@ export const useDeleteBook = () => {
 
     const deleteBook = async (id: string) => {
         try {
-            await deleteDoc(doc(database, "books", id));
+            await deleteDoc(doc(database, "sentinels", id));
         } catch (error) {
             console.log(error)
         }
@@ -17,7 +17,7 @@ export const useDeleteBook = () => {
     const mutation = useMutation({
         mutationFn: deleteBook,
          onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["books"] });
+            queryClient.invalidateQueries({ queryKey: ["sentinels"] });
         },
     })
 

@@ -23,7 +23,7 @@ export const useRemoveStock = () => {
                 createdAt: serverTimestamp()
             })
 
-            const updateDocRef = doc(database, "books", id);
+            const updateDocRef = doc(database, "sentinels", id);
 
             await updateDoc(updateDocRef, {
                 stock: stock - quantity
@@ -41,7 +41,7 @@ export const useRemoveStock = () => {
     const mutation = useMutation({
         mutationFn: removeStock,
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["books"] });
+            queryClient.invalidateQueries({ queryKey: ["sentinels"] });
         },
     })
 
