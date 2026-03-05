@@ -1,4 +1,5 @@
 import { Navbar } from "@/components/shared/nav-bar";
+import { ModalAddStockSentinel } from "@/features/sentinels/components/modal-add-stock-sentinel";
 import { ModalRegisterSentinel } from "@/features/sentinels/components/modal-register-sentinel";
 import { useGetAllSentinels } from "@/features/sentinels/hooks/get-all-sentinel-service";
 import { Box, Button, Flex, Heading, Input, InputGroup, Menu, Portal, Spinner, Table, Text, VStack } from "@chakra-ui/react";
@@ -9,6 +10,12 @@ import { LuSearch } from "react-icons/lu";
 export function Sentinels() {
   const [isOpen, setIsOpen] = useState(false)
   const { sentinels, isLoading } = useGetAllSentinels()
+
+  const [addIsOpen, setAddIsOpen] = useState(false)
+  const [actualStock, setActualStock] = useState({
+    stock: 0,
+    id: ''
+  })
 
   const isSearching = false
   const searchResults: any[] = []
@@ -91,7 +98,7 @@ export function Sentinels() {
                           <Menu.Positioner>
                             <Menu.Content>
 
-                              {/* <Menu.Item
+                              <Menu.Item
                                         onClick={() => {
                                           setAddIsOpen(true)
                                           setActualStock({
@@ -101,7 +108,7 @@ export function Sentinels() {
                                         }}
                                         value="enter">
                                         Entrada Estoque
-                                      </Menu.Item> */}
+                                      </Menu.Item>
                               {/*         
                                       <Menu.Item
                                         value="out"
@@ -143,6 +150,12 @@ export function Sentinels() {
             </Table.Root>
           </Box>
         )}
+
+        <ModalAddStockSentinel 
+            actualStock={actualStock}
+            open={addIsOpen}
+            setIsOpen={setAddIsOpen}
+        />
 
       </Box>
     </>

@@ -2,7 +2,7 @@ import { registerQuantityValidation, type RegisterQuantity } from "@/validations
 import { Button, CloseButton, Dialog, Field, Input, Portal } from "@chakra-ui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useAddStock } from "../hooks/use-add-stock";
+import { useAddStock } from "../hooks/register-add-stock-service";
 import { useRef } from "react";
 
 interface StockUpdate {
@@ -17,7 +17,7 @@ interface ModalProps {
 
 }
 
-export function ModalAddStockBook({ open, setIsOpen, actualStock }: ModalProps) {
+export function ModalAddStockSentinel({ open, setIsOpen, actualStock }: ModalProps) {
     const closeButton = useRef<HTMLButtonElement>(null)
     const { addStock } = useAddStock()
     const {
