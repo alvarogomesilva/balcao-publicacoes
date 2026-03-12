@@ -1,34 +1,13 @@
-import { database } from "@/lib/config"
-import { useQuery } from "@tanstack/react-query"
-import { collection, query, getDocs, limit } from "firebase/firestore"
-
-interface Book {
-  id: string
-  active: boolean
-  name: string
-  code: string
-  category: string
-  stock: string
-  createdAt: Date
-}
-
-const getAllBooks = async (): Promise<Book[]> => {
-  const q = query(collection(database, "books"), limit(5))
-  const querySnapshot = await getDocs(q)
-
-  const results: Book[] = []
-  querySnapshot.forEach((doc) => {
-    results.push({ id: doc.id, ...(doc.data() as Omit<Book, "id">) })
-  })
-
-  return results
-}
+import { fetchPublications } from "@/features/publications/api";
+import { publicationConfigs } from "@/features/publications/config";
+import type { Publication } from "@/features/publications/types";
+import { useQuery } from "@tanstack/react-query";
 
 export const useGetAllBooks = () => {
-  const { data: books = [], isLoading, isError } = useQuery<Book[]>({
-    queryKey: ['books'],
-    queryFn: getAllBooks,
-  })
+  const { data: books = [], isLoading, isError } = useQuery<Publication[]>({
+    queryKey: publicationConfigs.books.queryKey,
+    queryFn: () => fetchPublications("books"),
+  });
 
-  return { books, isLoading, isError }
-}
+  return { books, isLoading, isError };
+};

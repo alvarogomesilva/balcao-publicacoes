@@ -1,40 +1,26 @@
-import { database } from "@/lib/config";
+import { updatePublication } from "@/features/publications/api";
+import { publicationConfigs } from "@/features/publications/config";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { doc, updateDoc } from "firebase/firestore";
 import { toast } from "sonner";
-
-
-interface ValuesProps {
-    id: string
-    name: string
-}
+import type { UpdatePublication } from "@/validations/update-publication-validation";
 
 export const useUpdateAwaken = () => {
-    const queryClient = useQueryClient()
-    const updateAwaken = async (values: ValuesProps) => {
-        try {
-            const publication = doc(database, "awaken", values.id);
+  const queryClient = useQueryClient();
 
-            await updateDoc(publication, {
-                name: values.name
-            });
+  const mutation = useMutation({
+    mutationFn: (values: UpdatePublication) => updatePublication("awaken", values),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: publicationConfigs.awaken.queryKey,
+      });
+      toast.success("Sucesso", {
+        description: "Despertai atualizado com sucesso.",
+      });
+    },
+  });
 
-            toast.success('Sucesso', {
-                description: "Atualizado com sucesso!"
-            })
-        } catch (error) {
-            console.log(error)
-        }
-    }
-
-    const mutation = useMutation({
-        mutationFn: updateAwaken,
-         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["awaken"] });
-        },
-    })
-
-    return { 
-        updateAwaken: mutation.mutate
-     }
-}
+  return {
+    updateAwaken: mutation.mutateAsync,
+    isPending: mutation.isPending,
+  };
+};

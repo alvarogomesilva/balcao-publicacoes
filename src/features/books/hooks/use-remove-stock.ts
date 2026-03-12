@@ -1,51 +1,27 @@
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
-import { doc, updateDoc } from "firebase/firestore";
-
-import { database } from "@/lib/config";
-import { toast } from "sonner";
+import { registerStockMovement } from "@/features/publications/api";
+import { publicationConfigs } from "@/features/publications/config";
+import type { StockMutationValues } from "@/features/publications/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-
-interface ValuesProps {
-    id: string
-    stock: number
-    quantity: number
-}
+import { toast } from "sonner";
 
 export const useRemoveStock = () => {
-    const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
-    const removeStock = async ({ id, stock, quantity }: ValuesProps) => {
-        try {
-            await addDoc(collection(database, "movements"), {
-                publication: id,
-                type: 'saida',
-                quantity: quantity,
-                createdAt: serverTimestamp()
-            })
+  const mutation = useMutation({
+    mutationFn: ({ id, quantity }: StockMutationValues) =>
+      registerStockMovement("books", { id, quantity }, "saida"),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: publicationConfigs.books.queryKey,
+      });
+      toast.success("Mensagem", {
+        description: "Saída realizada com sucesso.",
+      });
+    },
+  });
 
-            const updateDocRef = doc(database, "books", id);
-
-            await updateDoc(updateDocRef, {
-                stock: stock - quantity
-            });
-
-            toast.success('Mensagem', {
-                description: "Saida realizada com sucesso"
-            })
-
-        } catch (error) {
-            console.log()
-        }
-    }
-
-    const mutation = useMutation({
-        mutationFn: removeStock,
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["books"] });
-        },
-    })
-
-    return { 
-        removeStock: mutation.mutate
-     }
-}
+  return {
+    removeStock: mutation.mutateAsync,
+    isPending: mutation.isPending,
+  };
+};

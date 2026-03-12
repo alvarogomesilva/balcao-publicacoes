@@ -1,34 +1,13 @@
-import { database } from "@/lib/config"
-import { useQuery } from "@tanstack/react-query"
-import { collection, query, getDocs, limit } from "firebase/firestore"
-
-interface Awaken {
-  id: string
-  active: boolean
-  name: string
-  code: string
-  category: string
-  stock: string
-  createdAt: Date
-}
-
-const getAllAwaken = async (): Promise<Awaken[]> => {
-  const q = query(collection(database, "awaken"), limit(5))
-  const querySnapshot = await getDocs(q)
-
-  const results: Awaken[] = []
-  querySnapshot.forEach((doc) => {
-    results.push({ id: doc.id, ...(doc.data() as Omit<Awaken, "id">) })
-  })
-
-  return results
-}
+import { fetchPublications } from "@/features/publications/api";
+import { publicationConfigs } from "@/features/publications/config";
+import type { Publication } from "@/features/publications/types";
+import { useQuery } from "@tanstack/react-query";
 
 export const useGetAllAwaken = () => {
-  const { data: awaken = [], isLoading, isError } = useQuery<Awaken[]>({
-    queryKey: ['awaken'],
-    queryFn: getAllAwaken,
-  })
+  const { data: awaken = [], isLoading, isError } = useQuery<Publication[]>({
+    queryKey: publicationConfigs.awaken.queryKey,
+    queryFn: () => fetchPublications("awaken"),
+  });
 
-  return { awaken, isLoading, isError }
-}
+  return { awaken, isLoading, isError };
+};

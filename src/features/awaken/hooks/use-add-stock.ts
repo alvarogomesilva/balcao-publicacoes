@@ -1,51 +1,27 @@
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
-import { doc, updateDoc } from "firebase/firestore";
-
-import { database } from "@/lib/config";
-import { toast } from "sonner";
+import { registerStockMovement } from "@/features/publications/api";
+import { publicationConfigs } from "@/features/publications/config";
+import type { StockMutationValues } from "@/features/publications/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-
-interface ValuesProps {
-    id: string
-    stock: number
-    quantity: number
-}
+import { toast } from "sonner";
 
 export const useAddStock = () => {
-    const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
-    const addStock = async ({ id, stock, quantity }: ValuesProps) => {
-        try {
-            await addDoc(collection(database, "movements"), {
-                publication: id,
-                type: 'entrada',
-                quantity: quantity,
-                createdAt: serverTimestamp()
-            })
+  const mutation = useMutation({
+    mutationFn: ({ id, quantity }: StockMutationValues) =>
+      registerStockMovement("awaken", { id, quantity }, "entrada"),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: publicationConfigs.awaken.queryKey,
+      });
+      toast.success("Mensagem", {
+        description: "Estoque atualizado com sucesso.",
+      });
+    },
+  });
 
-            const updateDocRef = doc(database, "awaken", id);
-
-            await updateDoc(updateDocRef, {
-                stock: stock + quantity
-            });
-
-            toast.success('Mensagem', {
-                description: "Adicionado com sucesso"
-            })
-
-        } catch (error) {
-            console.log()
-        }
-    }
-
-      const mutation = useMutation({
-        mutationFn: addStock,
-         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["books"] });
-        },
-    })
-
-    return { 
-        addStock: mutation.mutate
-     }
-}
+  return {
+    addStock: mutation.mutateAsync,
+    isPending: mutation.isPending,
+  };
+};

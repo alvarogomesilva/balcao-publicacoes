@@ -1,27 +1,25 @@
-import { database } from "@/lib/config";
+import { deletePublication } from "@/features/publications/api";
+import { publicationConfigs } from "@/features/publications/config";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { doc, deleteDoc } from "firebase/firestore";
-
+import { toast } from "sonner";
 
 export const useDeleteAwaken = () => {
-    const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
-    const deleteAwaken = async (id: string) => {
-        try {
-            await deleteDoc(doc(database, "awaken", id));
-        } catch (error) {
-            console.log(error)
-        }
-    }
+  const mutation = useMutation({
+    mutationFn: (id: string) => deletePublication("awaken", id),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: publicationConfigs.awaken.queryKey,
+      });
+      toast.success("Mensagem", {
+        description: "Despertai excluído com sucesso.",
+      });
+    },
+  });
 
-    const mutation = useMutation({
-        mutationFn: deleteAwaken,
-         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["awaken"] });
-        },
-    })
-
-    return { 
-        deleteAwaken: mutation.mutate
-     }
-}
+  return {
+    deleteAwaken: mutation.mutateAsync,
+    isPending: mutation.isPending,
+  };
+};

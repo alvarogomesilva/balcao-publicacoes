@@ -1,40 +1,26 @@
-import { database } from "@/lib/config";
+import { updatePublication } from "@/features/publications/api";
+import { publicationConfigs } from "@/features/publications/config";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { doc, updateDoc } from "firebase/firestore";
 import { toast } from "sonner";
+import type { UpdatePublication } from "@/validations/update-publication-validation";
 
+export const useUpdateSentinel = () => {
+  const queryClient = useQueryClient();
 
-interface ValuesProps {
-    id: string
-    name: string
-}
+  const mutation = useMutation({
+    mutationFn: (values: UpdatePublication) => updatePublication("sentinels", values),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: publicationConfigs.sentinels.queryKey,
+      });
+      toast.success("Sucesso", {
+        description: "Sentinela atualizado com sucesso.",
+      });
+    },
+  });
 
-export const useUpdateBook = () => {
-    const queryClient = useQueryClient()
-    const updateBook = async (values: ValuesProps) => {
-        try {
-            const publication = doc(database, "books", values.id);
-
-            await updateDoc(publication, {
-                name: values.name
-            });
-
-            toast.success('Sucesso', {
-                description: "Atualizado com sucesso!"
-            })
-        } catch (error) {
-            console.log(error)
-        }
-    }
-
-    const mutation = useMutation({
-        mutationFn: updateBook,
-         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["books"] });
-        },
-    })
-
-    return { 
-        updateBook: mutation.mutate
-     }
-}
+  return {
+    updateSentinel: mutation.mutateAsync,
+    isPending: mutation.isPending,
+  };
+};

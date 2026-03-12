@@ -1,34 +1,13 @@
-import { database } from "@/lib/config"
-import { useQuery } from "@tanstack/react-query"
-import { collection, query, getDocs, limit } from "firebase/firestore"
-
-interface Sentinel {
-  id: string
-  active: boolean
-  name: string
-  code: string
-  category: string
-  stock: string
-  createdAt: Date
-}
-
-const getAllSentinelService = async (): Promise<Sentinel[]> => {
-  const q = query(collection(database, "sentinels"), limit(5))
-  const querySnapshot = await getDocs(q)
-
-  const results: Sentinel[] = []
-  querySnapshot.forEach((doc) => {
-    results.push({ id: doc.id, ...(doc.data() as Omit<Sentinel, "id">) })
-  })
-
-  return results
-}
+import { fetchPublications } from "@/features/publications/api";
+import { publicationConfigs } from "@/features/publications/config";
+import type { Publication } from "@/features/publications/types";
+import { useQuery } from "@tanstack/react-query";
 
 export const useGetAllSentinels = () => {
-  const { data: sentinels = [], isLoading, isError } = useQuery<Sentinel[]>({
-    queryKey: ['sentinels'],
-    queryFn: getAllSentinelService,
-  })
+  const { data: sentinels = [], isLoading, isError } = useQuery<Publication[]>({
+    queryKey: publicationConfigs.sentinels.queryKey,
+    queryFn: () => fetchPublications("sentinels"),
+  });
 
-  return { sentinels, isLoading, isError }
-}
+  return { sentinels, isLoading, isError };
+};

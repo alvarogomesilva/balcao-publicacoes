@@ -20,4 +20,14 @@ export default tseslint.config([
       globals: globals.browser,
     },
   },
+  {
+    files: [
+      'src/components/ui/color-mode.tsx',
+      'src/components/ui/toaster.tsx',
+      'src/routes/index.tsx',
+    ],
+    rules: {
+      'react-refresh/only-export-components': 'off',
+    },
+  },
 ])

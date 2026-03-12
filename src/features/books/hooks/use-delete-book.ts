@@ -1,27 +1,25 @@
-import { database } from "@/lib/config";
+import { deletePublication } from "@/features/publications/api";
+import { publicationConfigs } from "@/features/publications/config";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { doc, deleteDoc } from "firebase/firestore";
-
+import { toast } from "sonner";
 
 export const useDeleteBook = () => {
-    const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
-    const deleteBook = async (id: string) => {
-        try {
-            await deleteDoc(doc(database, "books", id));
-        } catch (error) {
-            console.log(error)
-        }
-    }
+  const mutation = useMutation({
+    mutationFn: (id: string) => deletePublication("books", id),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: publicationConfigs.books.queryKey,
+      });
+      toast.success("Mensagem", {
+        description: "Livro excluído com sucesso.",
+      });
+    },
+  });
 
-    const mutation = useMutation({
-        mutationFn: deleteBook,
-         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["books"] });
-        },
-    })
-
-    return { 
-        deleteBook: mutation.mutate
-     }
-}
+  return {
+    deleteBook: mutation.mutateAsync,
+    isPending: mutation.isPending,
+  };
+};

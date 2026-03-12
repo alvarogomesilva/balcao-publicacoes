@@ -1,33 +1,45 @@
 import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
-import { doc, getDoc } from "firebase/firestore";
-import { auth, database } from "@/lib/config";
+import { signOut } from "firebase/auth";
+import { auth } from "@/lib/config";
 import { useNavigate } from "react-router";
-import { useAuthStore, type User } from "@/store/auth-store";
+import { useAuthStore } from "@/store/auth-store";
 import { toast } from "sonner";
+import { fetchUserProfile } from "@/features/publications/api";
+import { buildUserProfile } from "../utils/auth-user";
 
 export const useSignIn = () => {
-    const [signInWithEmailAndPassword, loading] = useSignInWithEmailAndPassword(auth)
-    const loginUser = useAuthStore((state) => state.login)
-    const navigate = useNavigate()
+    const [signInWithEmailAndPassword, , loading] =
+        useSignInWithEmailAndPassword(auth);
+    const loginUser = useAuthStore((state) => state.login);
+    const navigate = useNavigate();
 
-    const signIn = async (email: string, password: string) => {
-        try {
-            const user = await signInWithEmailAndPassword(email, password)
+  const signIn = async (email: string, password: string) => {
+    try {
+      const credentials = await signInWithEmailAndPassword(email, password);
 
-            if (user) {
-                const docRef = doc(database, "users", user?.user.uid);
-                const docSnap = await getDoc(docRef);
-                localStorage.setItem("@u", JSON.stringify(docSnap.data()));
-                loginUser(docSnap.data() as User)
-                navigate('/')
-            } else {
-                toast.error('Email/senha incorretos!')
-            }
+      if (!credentials) {
+        toast.error("Email ou senha incorretos.");
+        return false;
+      }
 
-        } catch (error) {
-            console.clear()
-        }
+      const profileData = await fetchUserProfile(credentials.user.uid);
+      const profile = buildUserProfile(credentials.user.uid, profileData);
+
+      if (!profile) {
+        await signOut(auth);
+        toast.error("Usuário sem perfil cadastrado.");
+        return false;
+      }
+
+      loginUser(profile);
+      navigate("/");
+
+      return true;
+    } catch {
+      toast.error("Não foi possível entrar. Verifique suas credenciais.");
+      return false;
     }
+  };
 
-    return { signIn, loading }
-}
+  return { signIn, loading };
+};
