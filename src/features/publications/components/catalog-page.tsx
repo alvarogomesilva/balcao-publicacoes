@@ -1,15 +1,15 @@
+import { EmptyState } from "@/components/shared/empty-state";
 import { PageShell } from "@/components/shared/page-shell";
 import { SectionHeader } from "@/components/shared/section-header";
 import { StatCard } from "@/components/shared/stat-card";
-import { formatCollectionLabel } from "@/lib/format";
 import type { PublicationCollection } from "@/features/publications/types";
+import { formatCollectionLabel } from "@/lib/format";
 import {
   Badge,
   Box,
   Button,
   Flex,
   Grid,
-  HStack,
   Input,
   InputGroup,
   Menu,
@@ -19,13 +19,10 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { useMemo, useState } from "react";
-import { FiPlus, FiSearch } from "react-icons/fi";
+import { useDeferredValue, useMemo, useState } from "react";
+import { FiPlus } from "react-icons/fi";
 import { LuArrowDown, LuArrowUp, LuPackage2, LuSearch } from "react-icons/lu";
-import {
-  usePublicationSearch,
-  usePublications,
-} from "../hooks/use-publications";
+import { usePublications } from "../hooks/use-publications";
 import type { Publication } from "../types";
 import {
   CreatePublicationDialog,
@@ -49,11 +46,21 @@ export function CatalogPage({ collection, title, description }: CatalogPageProps
   const [selectedPublicationId, setSelectedPublicationId] = useState("");
   const [publicationToUpdate, setPublicationToUpdate] = useState({ id: "", name: "" });
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState<Publication[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
 
+  const deferredSearch = useDeferredValue(searchQuery);
   const { data: publications = [], isLoading } = usePublications(collection);
-  const { searchPublications } = usePublicationSearch(collection);
+
+  const filteredPublications = useMemo(() => {
+    const term = deferredSearch.trim().toLowerCase();
+
+    if (!term) {
+      return publications;
+    }
+
+    return publications.filter((item) =>
+      [item.name, item.code, item.category].join(" ").toLowerCase().includes(term),
+    );
+  }, [deferredSearch, publications]);
 
   const stats = useMemo(() => {
     const active = publications.filter((item) => item.active).length;
@@ -67,19 +74,7 @@ export function CatalogPage({ collection, title, description }: CatalogPageProps
     };
   }, [publications]);
 
-  async function handleSearch() {
-    if (!searchQuery.trim()) {
-      setSearchResults([]);
-      setIsSearching(false);
-      return;
-    }
-
-    const results = await searchPublications(searchQuery);
-    setSearchResults(results);
-    setIsSearching(true);
-  }
-
-  const dataToRender = isSearching ? searchResults : publications;
+  const hasActiveFilters = Boolean(deferredSearch.trim());
 
   return (
     <>
@@ -103,27 +98,27 @@ export function CatalogPage({ collection, title, description }: CatalogPageProps
 
         <Grid templateColumns={{ base: "1fr", md: "repeat(3, 1fr)" }} gap={4} mb={6}>
           <StatCard
-            label="Títulos"
+            label="Titulos"
             value={publications.length}
-            helper="Catálogo total disponível nesta área."
+            helper="Catalogo total disponivel nesta area."
             icon={<LuPackage2 color="#0f766e" />}
           />
           <StatCard
-            label="Títulos ativos"
+            label="Titulos ativos"
             value={stats.active}
-            helper="Publicações marcadas como ativas."
+            helper="Publicacoes marcadas como ativas."
             icon={<LuArrowUp color="#0f766e" />}
           />
           <StatCard
             label="Estoque total"
             value={stats.totalStock}
-            helper={`${stats.lowStock} itens em atenção com estoque baixo.`}
+            helper={`${stats.lowStock} itens em atencao com estoque baixo.`}
             icon={<LuArrowDown color="#0f766e" />}
           />
         </Grid>
 
         <Box
-          bg="white"
+          bg="rgba(255,255,255,0.88)"
           border="1px solid"
           borderColor="blackAlpha.100"
           borderRadius="28px"
@@ -142,34 +137,52 @@ export function CatalogPage({ collection, title, description }: CatalogPageProps
           >
             <Box>
               <Text fontWeight="800" color="gray.900">
-                Gestão do catálogo
+                Gestao do catalogo
               </Text>
               <Text color="gray.500" fontSize="sm">
-                Consulta rápida, atualização de dados e movimentos de estoque.
+                Consulta rapida, atualizacao de dados e movimentos de estoque.
               </Text>
             </Box>
 
-            <HStack gap={3} w={{ base: "full", lg: "420px" }}>
-              <InputGroup flex="1" startElement={<LuSearch />}>
-                <Input
-                  placeholder="Pesquisar por nome"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  bg="gray.50"
-                  borderColor="transparent"
-                />
-              </InputGroup>
-              <Button bg="teal.600" color="white" onClick={handleSearch}>
-                <FiSearch />
-              </Button>
-            </HStack>
+            <InputGroup flex="1" maxW={{ lg: "420px" }} startElement={<LuSearch />}>
+              <Input
+                placeholder="Pesquisar por nome, codigo ou categoria"
+                value={searchQuery}
+                onChange={(event) => setSearchQuery(event.target.value)}
+                bg="gray.50"
+                borderColor="transparent"
+              />
+            </InputGroup>
           </Flex>
 
           {isLoading ? (
             <VStack py={16} colorPalette="teal">
               <Spinner color="colorPalette.600" />
-              <Text color="colorPalette.600">Carregando catálogo...</Text>
+              <Text color="colorPalette.600">Carregando catalogo...</Text>
             </VStack>
+          ) : !filteredPublications.length ? (
+            <Box p={4}>
+              <EmptyState
+                title={hasActiveFilters ? "Nenhum resultado encontrado" : "Catalogo vazio"}
+                description={
+                  hasActiveFilters
+                    ? "Tente buscar por outro termo ou limpe o filtro para ver todos os titulos."
+                    : "Cadastre o primeiro titulo desta colecao para iniciar o controle de estoque."
+                }
+                icon={<LuPackage2 />}
+                action={
+                  hasActiveFilters
+                    ? {
+                        label: "Limpar busca",
+                        onClick: () => setSearchQuery(""),
+                      }
+                    : {
+                        label: "Adicionar titulo",
+                        onClick: () => setIsCreateOpen(true),
+                      }
+                }
+              />
+            </Box>
           ) : (
             <>
               <Box display={{ base: "none", lg: "block" }} overflowX="auto">
@@ -177,14 +190,14 @@ export function CatalogPage({ collection, title, description }: CatalogPageProps
                   <Table.Header>
                     <Table.Row>
                       <Table.ColumnHeader>Nome</Table.ColumnHeader>
-                      <Table.ColumnHeader>Código</Table.ColumnHeader>
+                      <Table.ColumnHeader>Codigo</Table.ColumnHeader>
                       <Table.ColumnHeader>Status</Table.ColumnHeader>
                       <Table.ColumnHeader>Estoque</Table.ColumnHeader>
-                      <Table.ColumnHeader textAlign="center">Ações</Table.ColumnHeader>
+                      <Table.ColumnHeader textAlign="center">Acoes</Table.ColumnHeader>
                     </Table.Row>
                   </Table.Header>
                   <Table.Body>
-                    {dataToRender.map((item) => (
+                    {filteredPublications.map((item) => (
                       <Table.Row key={item.id}>
                         <Table.Cell>{item.name}</Table.Cell>
                         <Table.Cell>{item.code || "-"}</Table.Cell>
@@ -225,7 +238,7 @@ export function CatalogPage({ collection, title, description }: CatalogPageProps
               </Box>
 
               <VStack display={{ base: "flex", lg: "none" }} align="stretch" p={4} gap={3}>
-                {dataToRender.map((item) => (
+                {filteredPublications.map((item) => (
                   <Box
                     key={item.id}
                     border="1px solid"
@@ -240,7 +253,7 @@ export function CatalogPage({ collection, title, description }: CatalogPageProps
                           {item.name}
                         </Text>
                         <Text fontSize="sm" color="gray.500">
-                          Código: {item.code || "-"}
+                          Codigo: {item.code || "-"}
                         </Text>
                       </Box>
                       <Badge colorPalette={item.active ? "teal" : "gray"}>
@@ -276,7 +289,7 @@ export function CatalogPage({ collection, title, description }: CatalogPageProps
                           setIsStockOutOpen(true);
                         }}
                       >
-                        Saída
+                        Saida
                       </Button>
                       <Button
                         size="sm"
@@ -362,7 +375,7 @@ function CatalogActions({
     <Menu.Root>
       <Menu.Trigger asChild>
         <Button variant="outline" size="sm">
-          Opções
+          Opcoes
         </Button>
       </Menu.Trigger>
       <Portal>
@@ -372,7 +385,7 @@ function CatalogActions({
               Entrada estoque
             </Menu.Item>
             <Menu.Item value="stock-out" onClick={() => onStockOut(item.id)}>
-              Saída estoque
+              Saida estoque
             </Menu.Item>
             <Menu.Item value="edit" onClick={() => onEdit(item)}>
               Editar

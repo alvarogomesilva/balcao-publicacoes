@@ -7,8 +7,8 @@ export function Others() {
       <Navbar />
       <CatalogPage
         collection="others"
-        title="Outras publicações"
-        description="Espaço para materiais complementares, itens sazonais e publicações fora das linhas principais."
+        title="Outras publicacoes"
+        description="Espaco para materiais complementares, itens sazonais e publicacoes fora das linhas principais."
       />
     </>
   );

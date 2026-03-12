@@ -1,6 +1,8 @@
 import { database } from "@/lib/config";
 import type { RegisterPublication } from "@/validations/register-publication-validation";
 import type { UpdatePublication } from "@/validations/update-publication-validation";
+import { fetchCustomers } from "@/features/customers/api";
+import { fetchOrders, fetchRecentOrders } from "@/features/orders/api";
 import {
   addDoc,
   collection,
@@ -50,7 +52,7 @@ function mapMovementDoc(docSnapshot: QueryDocumentSnapshot<DocumentData>): Movem
     id: docSnapshot.id,
     publication: String(data.publication ?? ""),
     publicationCollection: (data.publicationCollection ?? "books") as PublicationCollection,
-    publicationName: String(data.publicationName ?? "Publicação"),
+    publicationName: String(data.publicationName ?? "Publicacao"),
     type: (data.type ?? "entrada") as MovementType,
     quantity: Number(data.quantity ?? 0),
     previousStock: Number(data.previousStock ?? 0),
@@ -80,6 +82,25 @@ export async function searchPublications(
 
   const publications = await fetchPublications(collectionName);
   return publications.filter((item) => item.name.toLowerCase().includes(term));
+}
+
+export async function fetchAllPublicationOptions() {
+  const collectionNames = Object.keys(publicationConfigs) as PublicationCollection[];
+  const publicationGroups = await Promise.all(
+    collectionNames.map((collectionName) => fetchPublications(collectionName)),
+  );
+
+  return collectionNames.flatMap((collectionName, index) =>
+    publicationGroups[index]
+      .filter((item) => item.active && item.stock > 0)
+      .map((item) => ({
+        id: item.id,
+        name: item.name,
+        stock: item.stock,
+        collection: collectionName,
+        code: item.code,
+      })),
+  );
 }
 
 export async function createPublication(
@@ -124,7 +145,7 @@ export async function registerStockMovement(
   const quantity = Number(values.quantity);
 
   if (!Number.isInteger(quantity) || quantity <= 0) {
-    throw new Error("Informe uma quantidade válida.");
+    throw new Error("Informe uma quantidade valida.");
   }
 
   const publicationRef = doc(database, collectionName, values.id);
@@ -134,7 +155,7 @@ export async function registerStockMovement(
     const publicationSnapshot = await transaction.get(publicationRef);
 
     if (!publicationSnapshot.exists()) {
-      throw new Error("Publicação não encontrada.");
+      throw new Error("Publicacao nao encontrada.");
     }
 
     const publicationData = publicationSnapshot.data();
@@ -143,7 +164,7 @@ export async function registerStockMovement(
       type === "entrada" ? currentStock + quantity : currentStock - quantity;
 
     if (nextStock < 0) {
-      throw new Error("Estoque insuficiente para esta saída.");
+      throw new Error("Estoque insuficiente para esta saida.");
     }
 
     const movementRef = doc(movementsRef);
@@ -151,7 +172,7 @@ export async function registerStockMovement(
     transaction.set(movementRef, {
       publication: values.id,
       publicationCollection: collectionName,
-      publicationName: String(publicationData.name ?? "Publicação"),
+      publicationName: String(publicationData.name ?? "Publicacao"),
       type,
       quantity,
       previousStock: currentStock,
@@ -179,10 +200,14 @@ export async function fetchRecentMovements(maxItems = 18): Promise<Movement[]> {
 
 export async function fetchDashboardSummary(): Promise<DashboardSummary> {
   const collectionNames = Object.keys(publicationConfigs) as PublicationCollection[];
-  const [recentMovements, ...publicationGroups] = await Promise.all([
-    fetchRecentMovements(8),
-    ...collectionNames.map((collectionName) => fetchPublications(collectionName)),
-  ]);
+  const [recentMovements, recentOrders, customers, orders, ...publicationGroups] =
+    await Promise.all([
+      fetchRecentMovements(8),
+      fetchRecentOrders(6),
+      fetchCustomers(),
+      fetchOrders(),
+      ...collectionNames.map((collectionName) => fetchPublications(collectionName)),
+    ]);
 
   const collectionSummaries = collectionNames.map((collectionName, index) => {
     const publications = publicationGroups[index];
@@ -198,14 +223,51 @@ export async function fetchDashboardSummary(): Promise<DashboardSummary> {
   });
 
   const allPublications = publicationGroups.flat();
+  const customerOrderMetrics = orders.reduce<
+    Record<string, { orderCount: number; totalSpent: number }>
+  >((acc, order) => {
+    if (!acc[order.customerId]) {
+      acc[order.customerId] = { orderCount: 0, totalSpent: 0 };
+    }
+
+    acc[order.customerId].orderCount += 1;
+    acc[order.customerId].totalSpent += order.status === "cancelado" ? 0 : order.totalAmount;
+    return acc;
+  }, {});
+
+  const topCustomers = [...customers]
+    .map((customer) => ({
+      ...customer,
+      orderCount: customerOrderMetrics[customer.id]?.orderCount ?? 0,
+      totalSpent: customerOrderMetrics[customer.id]?.totalSpent ?? 0,
+    }))
+    .filter((customer) => customer.orderCount > 0)
+    .sort((a, b) => {
+      if (b.orderCount !== a.orderCount) {
+        return b.orderCount - a.orderCount;
+      }
+
+      return b.totalSpent - a.totalSpent;
+    })
+    .slice(0, 4);
 
   return {
     totalTitles: allPublications.length,
     activeTitles: allPublications.filter((item) => item.active).length,
     totalStock: allPublications.reduce((acc, item) => acc + item.stock, 0),
     lowStockCount: allPublications.filter((item) => item.stock <= 5).length,
+    totalCustomers: customers.length,
+    activeCustomers: customers.filter((item) => item.active).length,
+    totalOrders: orders.length,
+    openOrders: orders.filter((item) => item.status !== "entregue" && item.status !== "cancelado")
+      .length,
+    salesVolume: orders
+      .filter((item) => item.status !== "cancelado")
+      .reduce((acc, item) => acc + item.totalAmount, 0),
     collections: collectionSummaries,
     recentMovements,
+    recentOrders,
+    topCustomers,
   };
 }
 

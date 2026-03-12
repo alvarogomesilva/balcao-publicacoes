@@ -1,69 +1,97 @@
-# React + TypeScript + Vite
+# Balcao de Publicacoes
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplicacao web para gestao de catalogo, estoque, clientes e pedidos, com autenticacao via Firebase, interface em React + Chakra UI e persistencia em Firestore.
 
-Currently, two official plugins are available:
+## Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- React 19
+- TypeScript
+- Vite
+- Chakra UI
+- TanStack Query
+- React Hook Form + Zod
+- Firebase Auth
+- Firestore
 
-## Expanding the ESLint configuration
+## Modulos
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- Dashboard operacional com indicadores de catalogo, estoque, clientes, pedidos e movimentacoes
+- Catalogos para `books`, `awaken`, `sentinels` e `others`
+- Cadastro de clientes com ativacao e edicao
+- Gestao de pedidos com itens, status, observacoes e baixa automatica de estoque
+- Sincronizacao de sessao com Firebase Auth
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Requisitos
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+- Node.js 20+
+- Projeto Firebase com Authentication e Firestore habilitados
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Variaveis de ambiente
+
+Crie um arquivo `.env` com base em `.env.example`.
+
+```bash
+VITE_API_KEY=
+VITE_AUTH_DOMAIN=
+VITE_PROJECT_ID=
+VITE_STORAGE_BUCKET=
+VITE_MESSAGING_SENDER_ID=
+VITE_APP_ID=
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Instalacao
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev
 ```
+
+## Scripts
+
+```bash
+npm run dev
+npm run build
+npm run lint
+npm run preview
+```
+
+## Estrutura de colecoes no Firestore
+
+- `users`
+  - perfil do usuario autenticado
+  - campos minimos: `name`, `email`
+- `customers`
+  - cadastro de pessoas e organizacoes
+- `orders`
+  - pedidos com itens, status, observacoes e valor total
+- `movements`
+  - historico de entradas e saidas de estoque
+- `books`, `awaken`, `sentinels`, `others`
+  - catalogos de publicacoes
+
+## Fluxo operacional
+
+1. Cadastre o perfil do usuario na colecao `users` com o mesmo `uid` do Firebase Auth.
+2. Cadastre clientes.
+3. Cadastre publicacoes e ajuste estoque.
+4. Crie pedidos com itens ativos e estoque disponivel.
+5. Acompanhe operacao e vendas no dashboard.
+
+## Deploy
+
+O projeto esta configurado para SPA em Vercel via `vercel.json`.
+
+Passos recomendados:
+
+1. Configure as variaveis `VITE_*` no provedor de deploy.
+2. Garanta que Firebase Auth e Firestore estejam publicados com regras adequadas.
+3. Execute `npm run lint` e `npm run build` no pipeline.
+4. Publique a pasta `dist`.
+
+## Checklist de producao
+
+- Validar perfis em `users`
+- Revisar regras do Firestore para leitura/escrita autenticada
+- Garantir indices do Firestore para consultas ordenadas por `createdAt` e `name`
+- Configurar dominios autorizados no Firebase Auth
+- Definir ambiente de homologacao e producao com projetos separados, se necessario

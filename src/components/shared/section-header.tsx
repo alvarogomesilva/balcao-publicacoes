@@ -19,20 +19,20 @@ export function SectionHeader({
     <Box
       display="flex"
       flexDirection={{ base: "column", lg: "row" }}
-      alignItems={{ base: "flex-start", lg: "flex-end" }}
+      alignItems={{ base: "stretch", lg: "flex-end" }}
       justifyContent="space-between"
       gap={4}
       mb={6}
       {...props}
     >
-      <Box>
+      <Box flex="1">
         {eyebrow ? (
           <Text
             textTransform="uppercase"
             letterSpacing="0.14em"
             fontSize="xs"
             fontWeight="700"
-            color="teal.700"
+            color="teal.800"
             mb={2}
           >
             {eyebrow}
@@ -47,13 +47,22 @@ export function SectionHeader({
           {title}
         </Heading>
         {description ? (
-          <Text color="gray.600" maxW="720px" fontSize={{ base: "sm", md: "md" }}>
+          <Text color="gray.600" maxW="760px" fontSize={{ base: "sm", md: "md" }}>
             {description}
           </Text>
         ) : null}
       </Box>
 
-      {actions ? <HStack gap={3}>{actions}</HStack> : null}
+      {actions ? (
+        <HStack
+          gap={3}
+          flexWrap="wrap"
+          justify={{ base: "stretch", lg: "flex-end" }}
+          align="stretch"
+        >
+          {actions}
+        </HStack>
+      ) : null}
     </Box>
   );
 }

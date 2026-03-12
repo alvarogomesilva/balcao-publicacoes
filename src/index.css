@@ -1,0 +1,96 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap");
+
+:root {
+  --app-bg: #f4fbf7;
+  --app-bg-alt: #ecf6f1;
+  --app-surface: rgba(255, 255, 255, 0.78);
+  --app-card: #ffffff;
+  --app-border: rgba(15, 23, 42, 0.08);
+  --app-border-strong: rgba(15, 23, 42, 0.14);
+  --app-ink: #12202f;
+  --app-muted: #5f6f7f;
+  --app-accent: #0f766e;
+  --app-accent-strong: #115e59;
+  --app-accent-soft: #d8fbef;
+  --app-warm: #f59e0b;
+  --app-shadow: 0 24px 60px rgba(15, 23, 42, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  color: var(--app-ink);
+  font-family:
+    "Manrope",
+    "Segoe UI",
+    sans-serif;
+  background:
+    radial-gradient(circle at top left, rgba(15, 118, 110, 0.14), transparent 28%),
+    radial-gradient(circle at top right, rgba(245, 158, 11, 0.08), transparent 20%),
+    linear-gradient(180deg, var(--app-bg) 0%, #ffffff 32%, var(--app-bg-alt) 100%);
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+::selection {
+  color: #ffffff;
+  background: var(--app-accent);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: rgba(15, 118, 110, 0.35);
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.app-fade-in {
+  animation: app-fade-in 0.45s ease;
+}
+
+.app-hide-scrollbar {
+  scrollbar-width: none;
+}
+
+.app-hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+@keyframes app-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

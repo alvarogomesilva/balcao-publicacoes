@@ -1,9 +1,9 @@
+import { fetchUserProfile } from "@/features/publications/api";
 import { auth } from "@/lib/config";
 import { useAuthStore } from "@/store/auth-store";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { useEffect } from "react";
 import { toast } from "sonner";
-import { fetchUserProfile } from "@/features/publications/api";
 import { buildUserProfile } from "../utils/auth-user";
 
 export function AuthSessionSync() {
@@ -29,7 +29,7 @@ export function AuthSessionSync() {
           if (!userProfile) {
             await signOut(auth);
             logout();
-            toast.error("Usuário sem perfil cadastrado.");
+            toast.error("Usuario sem perfil cadastrado.");
             setAuthReady(true);
             return;
           }
@@ -39,7 +39,7 @@ export function AuthSessionSync() {
         } catch {
           await signOut(auth);
           logout();
-          toast.error("Não foi possível sincronizar sua sessão.");
+          toast.error("Nao foi possivel sincronizar sua sessao.");
           setAuthReady(true);
         }
       })();

@@ -8,7 +8,7 @@ export function Sentinels() {
       <CatalogPage
         collection="sentinels"
         title="Sentinelas"
-        description="Área dedicada aos títulos Sentinelas com visão operacional responsiva e busca rápida."
+        description="Area dedicada aos titulos Sentinelas com visao operacional responsiva e busca rapida."
       />
     </>
   );

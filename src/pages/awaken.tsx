@@ -8,7 +8,7 @@ export function Awaken() {
       <CatalogPage
         collection="awaken"
         title="Despertais"
-        description="Gerencie os títulos da linha Despertai com a mesma operação de cadastro, ajuste e estoque."
+        description="Gerencie os titulos da linha Despertai com a mesma operacao de cadastro, ajuste e estoque."
       />
     </>
   );

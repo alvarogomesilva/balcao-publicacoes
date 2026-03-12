@@ -1,17 +1,16 @@
-import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
-import { signOut } from "firebase/auth";
-import { auth } from "@/lib/config";
-import { useNavigate } from "react-router";
-import { useAuthStore } from "@/store/auth-store";
-import { toast } from "sonner";
 import { fetchUserProfile } from "@/features/publications/api";
+import { auth } from "@/lib/config";
+import { useAuthStore } from "@/store/auth-store";
+import { signOut } from "firebase/auth";
+import { useNavigate } from "react-router";
+import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
+import { toast } from "sonner";
 import { buildUserProfile } from "../utils/auth-user";
 
 export const useSignIn = () => {
-    const [signInWithEmailAndPassword, , loading] =
-        useSignInWithEmailAndPassword(auth);
-    const loginUser = useAuthStore((state) => state.login);
-    const navigate = useNavigate();
+  const [signInWithEmailAndPassword, , loading] = useSignInWithEmailAndPassword(auth);
+  const loginUser = useAuthStore((state) => state.login);
+  const navigate = useNavigate();
 
   const signIn = async (email: string, password: string) => {
     try {
@@ -27,16 +26,15 @@ export const useSignIn = () => {
 
       if (!profile) {
         await signOut(auth);
-        toast.error("Usuário sem perfil cadastrado.");
+        toast.error("Usuario sem perfil cadastrado.");
         return false;
       }
 
       loginUser(profile);
       navigate("/");
-
       return true;
     } catch {
-      toast.error("Não foi possível entrar. Verifique suas credenciais.");
+      toast.error("Nao foi possivel entrar. Verifique suas credenciais.");
       return false;
     }
   };

@@ -30,7 +30,7 @@ export const publicationConfigs: Record<PublicationCollection, PublicationConfig
     collection: "others",
     category: "outras-publicacoes",
     queryKey: ["others"],
-    singularLabel: "Outra publicação",
+    singularLabel: "Outra publicacao",
   },
 };
 

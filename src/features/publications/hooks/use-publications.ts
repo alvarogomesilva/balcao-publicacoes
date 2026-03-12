@@ -3,6 +3,7 @@ import { toast } from "sonner";
 import {
   createPublication,
   deletePublication,
+  fetchAllPublicationOptions,
   fetchDashboardSummary,
   fetchPublications,
   fetchRecentMovements,
@@ -10,7 +11,7 @@ import {
   searchPublications,
   updatePublication,
 } from "../api";
-import { getPublicationConfig } from "../config";
+import { getPublicationConfig, publicationConfigs } from "../config";
 import type {
   DashboardSummary,
   Movement,
@@ -44,22 +45,34 @@ export function useRecentMovements(maxItems = 24) {
   });
 }
 
+export function useAllPublicationOptions() {
+  return useQuery({
+    queryKey: ["publication-options"],
+    queryFn: fetchAllPublicationOptions,
+  });
+}
+
 export function usePublicationSearch(collection: PublicationCollection) {
   return {
     searchPublications: (search: string) => searchPublications(collection, search),
   };
 }
 
-function invalidateCatalogQueries(
+export async function invalidateOperationalQueries(
   queryClient: ReturnType<typeof useQueryClient>,
-  collection: PublicationCollection,
 ) {
-  const config = getPublicationConfig(collection);
-
-  return Promise.all([
-    queryClient.invalidateQueries({ queryKey: config.queryKey }),
+  await Promise.all([
+    ...(
+      Object.values(publicationConfigs).map((config) =>
+        queryClient.invalidateQueries({ queryKey: config.queryKey }),
+      )
+    ),
+    queryClient.invalidateQueries({ queryKey: ["publication-options"] }),
     queryClient.invalidateQueries({ queryKey: ["dashboard-summary"] }),
     queryClient.invalidateQueries({ queryKey: ["recent-movements"] }),
+    queryClient.invalidateQueries({ queryKey: ["customers"] }),
+    queryClient.invalidateQueries({ queryKey: ["orders"] }),
+    queryClient.invalidateQueries({ queryKey: ["recent-orders"] }),
   ]);
 }
 
@@ -70,7 +83,7 @@ export function useCreatePublicationMutation(collection: PublicationCollection) 
   return useMutation({
     mutationFn: (values: RegisterPublication) => createPublication(collection, values),
     onSuccess: async () => {
-      await invalidateCatalogQueries(queryClient, collection);
+      await invalidateOperationalQueries(queryClient);
       toast.success("Sucesso", {
         description: `${config.singularLabel} criado com sucesso.`,
       });
@@ -85,7 +98,7 @@ export function useUpdatePublicationMutation(collection: PublicationCollection) 
   return useMutation({
     mutationFn: (values: UpdatePublication) => updatePublication(collection, values),
     onSuccess: async () => {
-      await invalidateCatalogQueries(queryClient, collection);
+      await invalidateOperationalQueries(queryClient);
       toast.success("Sucesso", {
         description: `${config.singularLabel} atualizado com sucesso.`,
       });
@@ -100,9 +113,9 @@ export function useDeletePublicationMutation(collection: PublicationCollection) 
   return useMutation({
     mutationFn: (id: string) => deletePublication(collection, id),
     onSuccess: async () => {
-      await invalidateCatalogQueries(queryClient, collection);
+      await invalidateOperationalQueries(queryClient);
       toast.success("Mensagem", {
-        description: `${config.singularLabel} excluído com sucesso.`,
+        description: `${config.singularLabel} excluido com sucesso.`,
       });
     },
   });
@@ -118,12 +131,12 @@ export function useStockMovementMutation(
     mutationFn: ({ id, quantity }: StockMutationValues) =>
       registerStockMovement(collection, { id, quantity }, type),
     onSuccess: async () => {
-      await invalidateCatalogQueries(queryClient, collection);
+      await invalidateOperationalQueries(queryClient);
       toast.success("Mensagem", {
         description:
           type === "entrada"
             ? "Estoque atualizado com sucesso."
-            : "Saída realizada com sucesso.",
+            : "Saida realizada com sucesso.",
       });
     },
   });

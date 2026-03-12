@@ -1,4 +1,6 @@
 import type { Timestamp } from "firebase/firestore";
+import type { Customer } from "@/features/customers/types";
+import type { Order } from "@/features/orders/types";
 
 export type PublicationCollection = "books" | "awaken" | "sentinels" | "others";
 export type MovementType = "entrada" | "saida";
@@ -41,6 +43,11 @@ export interface DashboardSummary {
   activeTitles: number;
   totalStock: number;
   lowStockCount: number;
+  totalCustomers: number;
+  activeCustomers: number;
+  totalOrders: number;
+  openOrders: number;
+  salesVolume: number;
   collections: Array<{
     collection: PublicationCollection;
     label: string;
@@ -49,4 +56,11 @@ export interface DashboardSummary {
     totalStock: number;
   }>;
   recentMovements: Movement[];
+  recentOrders: Order[];
+  topCustomers: Array<
+    Pick<Customer, "id" | "name" | "email" | "phone" | "city"> & {
+      orderCount: number;
+      totalSpent: number;
+    }
+  >;
 }

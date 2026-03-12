@@ -8,7 +8,7 @@ export function Books() {
       <CatalogPage
         collection="books"
         title="Livros"
-        description="Catálogo principal de livros com controle rápido de estoque, atualização e busca por título."
+        description="Catalogo principal de livros com controle rapido de estoque, atualizacao e busca por titulo."
       />
     </>
   );

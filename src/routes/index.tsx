@@ -19,6 +19,9 @@ const Sentinels = lazy(async () => ({
 const Awaken = lazy(async () => ({ default: (await import("@/pages/awaken")).Awaken }));
 const Home = lazy(async () => ({ default: (await import("@/pages/home")).Home }));
 const Books = lazy(async () => ({ default: (await import("@/pages/books")).Books }));
+const Customers = lazy(async () => ({
+  default: (await import("@/pages/customers")).Customers,
+}));
 
 function RouteFallback() {
   return (
@@ -47,6 +50,7 @@ export const router = createBrowserRouter(
         <Route path="/sentinels" element={withSuspense(<Sentinels />)} />
         <Route path="/awaken" element={withSuspense(<Awaken />)} />
         <Route path="/orders" element={withSuspense(<Order />)} />
+        <Route path="/customers" element={withSuspense(<Customers />)} />
       </Route>
 
       <Route path="*" element={withSuspense(<NotFound />)} />
